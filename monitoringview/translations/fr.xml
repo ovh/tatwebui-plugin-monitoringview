@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<translations>
+  <translation id="messages_nomessage">Aucun message</translation>
+  <translation id="message_send">Envoyer</translation>
+  <translation id="message_reply">Répondre</translation>
+  <translation id="message_like">J'aime</translation>
+  <translation id="message_unlike">J'aime plus</translation>
+  <translation id="message_send">Envoyer</translation>
+  <translation id="message_reply">Répondre</translation>
+  <translation id="message_read_only">Vous êtes en lecture seule sur ce topic.</translation>
+  <translation id="message_bookmark">Favoris</translation>
+  <translation id="message_delete">Effacer</translation>
+  <translation id="message_label_add">Ajouter label</translation>
+  <translation id="message_characters_left">Restant</translation>
+  <translation id="message_update">Modifier</translation>
+  <translation id="message_url">Url directe vers ce message</translation>
+</translations>

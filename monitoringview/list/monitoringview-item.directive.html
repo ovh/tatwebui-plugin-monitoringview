@@ -1,0 +1,155 @@
+<section class="message-monitoringview-wrapper " data-ng-hide="message.hide">
+  <div class="row">
+
+    <div class="messages-run-actions-root" ng-hide="message.inReplyOfIDRoot != ''">
+        <button title="{{ (MessageMonitoringviewItemCtrl.hasLiked(message) ? 'message_unlike' : 'message_like') | translate }}"
+                class="btn btn-default" data-ng-click="MessageMonitoringviewItemCtrl.toggleLikeMessage(message)">
+             <i data-ng-class="{'fa fa-thumbs-o-up': !MessageMonitoringviewItemCtrl.hasLiked(message), 'fa fa-thumbs-o-down':MessageMonitoringviewItemCtrl.hasLiked(message)}"></i>
+         </button>
+
+        <button title="{{ 'message_reply' | translate }}"
+                class="btn btn-default" data-ng-click="replying=true">
+            <i class="fa fa-comment-o"></i>
+        </button>
+
+        <button title="Set to done"
+                ng-if="MessageMonitoringviewItemCtrl.canDoneMessage"
+                class="btn btn-default" data-ng-click="MessageMonitoringviewItemCtrl.doneMessage(message)">
+            <i class="fa fa-tasks"></i>
+            <i class="fa fa-check"></i>
+        </button>
+
+        <button title="Remove from my tasks"
+                ng-if="MessageMonitoringviewItemCtrl.canDeleteFromTasksMessage"
+                class="btn btn-default" data-ng-click="MessageMonitoringviewItemCtrl.deleteFromTasksMessage(message)">
+            <i class="fa fa-tasks"></i>
+            <i class="fa fa-ban"></i>
+        </button>
+
+        <button title="Add to my tasks"
+                ng-if="MessageMonitoringviewItemCtrl.canAddToTasksMessage"
+                class="btn btn-default" data-ng-click="MessageMonitoringviewItemCtrl.addToTasksMessage(message)">
+            <i class="fa fa-tasks"></i>
+            <i class="fa fa-plus"></i>
+        </button>
+
+        <button class="btn btn-default"
+                title="{{ 'message_bookmark' | translate }}"
+                data-ng-click="MessageMonitoringviewItemCtrl.bookmarkMessage()">
+            <i class="fa fa-bookmark-o"></i>
+        </button>
+
+        <button class="btn btn-default" data-ng-click="message.updating=true"
+        ng-if="isTopicUpdatableMsg || isTopicUpdatableAllMsg">
+            <i class="fa fa-pencil" title="{{ 'message_update' | translate }}"></i>
+        </button>
+
+        <button class="btn btn-default" data-ng-click="message.deleting=true"
+        ng-if="isTopicDeletableMsg || isTopicDeletableAllMsg">
+            <i class="fa fa-trash" title="{{ 'message_delete' | translate }}"></i>
+        </button>
+
+        <button title="{{ 'message_label_add' | translate }}"
+                class="btn btn-default" data-ng-click="addingLabel=!addingLabel">
+            <i class="fa fa-tag"></i>
+        </button>
+
+        <button title="{{ 'message_url' | translate }}"
+                class="btn btn-default" data-ng-click="MessageMonitoringviewItemCtrl.urlMessage(message)">
+            <i class="fa fa-link"></i>
+        </button>
+
+        <div class="input-group" ng-show="addingLabel">
+          <div class="input-group-addon monitoringview-colorpick">
+            <spectrum-colorpicker ng-show="addingLabel && MessageMonitoringviewItemCtrl.initColor(message)"
+              ng-model="message.currentLabel.color"
+              palette="MessageMonitoringviewItemCtrl.palette"
+              options="{showInput: true, showAlpha: true, preferredFormat:'Hex',
+                showPalette: true,
+                togglePaletteOnly: false}" ></spectrum-colorpicker>
+          </div>
+          <form data-ng-submit="MessageMonitoringviewItemCtrl.addLabel(message)">
+            <input class="form-control" type="text" data-ng-model="message.currentLabel.text" placeholder="{{ 'message_label_add' | translate}}">
+          </form>
+        </div>
+    </div>
+
+      <user-display username="message.author.username" fullname="message.author.fullname"></user-display>
+      <span class="message-monitoringview-date">{{message.dateCreation * 1000| amCalendar}}</span>
+      <span class="badge tlabel"
+            style="background-color: {{label.color}}; color: {{MessageMonitoringviewItemCtrl.getBrightness(label.color)>128 ? '#000000' : '#ffffff' }}"
+            data-ng-repeat="label in message.labels track by label.text">
+          <i class="fa fa-tags"></i> {{label.text}}
+          <a role="button" data-ng-click="MessageMonitoringviewItemCtrl.removeLabel(message, label.text)">X</a>
+      </span>
+
+      <div class="message-monitoringview-content" ng-bind-html="message.text | linky | nl2br | parseTags:message.tags"></div>
+
+      <div class="message-monitoringview-reply" data-ng-show="replying">
+          <textarea class="form-control" data-ng-model="MessageMonitoringviewItemCtrl.replyText"></textarea>
+          <button class="btn btn-primary"
+                  data-ng-click="MessageMonitoringviewItemCtrl.replyMessage(message); $event.stopPropagation();">
+              <i class="fa fa-reply-all"></i>
+              Reply
+          </button>
+          <button class="btn btn-default" data-ng-click="replying=false">
+              <i class="fa fa-ban"></i>
+              {{ 'shared_common_cancel' | translate}}
+          </button>
+      </div>
+      <div class="message-reply" data-ng-show="message.updating">
+          <textarea class="form-control" data-ng-model="message.text"></textarea>
+          <button class="btn btn-primary"
+                  data-ng-click="MessageMonitoringviewItemCtrl.updateMessage(message); $event.stopPropagation();">
+              <i class="fa fa-pencil-square-o"></i>
+              Update
+          </button>
+          <button class="btn btn-default" data-ng-click="message.updating=false">
+              <i class="fa fa-ban"></i>
+              {{ 'shared_common_cancel' | translate}}
+          </button>
+      </div>
+      <div data-ng-show="message.deleting">
+          <button class="btn btn-danger"
+                  data-ng-click="MessageMonitoringviewItemCtrl.deleteMessage(message);">
+              <i class="fa fa-trash"></i>
+              Confirm Delete <span ng-show="message.replies.length">message and replies</span>
+          </button>
+          <button class="btn btn-default" data-ng-click="message.deleting=false">
+              <i class="fa fa-ban"></i>
+              {{ 'shared_common_cancel' | translate}}
+          </button>
+      </div>
+  </div>
+
+  <span class="label label-info" ng-show="message.loading">Please Wait, Loading...</span>
+
+  <div class="monitoringview-replies-right" ng-if="message.replies.length">
+    <button title="search in replies" class="btn btn-xs" ng-if="!message.searching" data-ng-click="message.searching=true">
+      <i class="fa fa-search"></i>
+    </button>
+
+    <div class="input-group" ng-if="message.searching">
+      <div class="input-group-addon" data-ng-click="message.searching=!message.searching"><i class="fa fa-search"></i></div>
+      <input type="search" class="form-control" data-ng-model="message.search" placeholder="search in reply">
+      <div class="input-group-addon" data-ng-click="message.searching=false"><i class="fa fa-ban"></i></div>
+    </div>
+
+    <span class="label label-default">Display {{message.limitTo}} on {{message.replies.length}} event(s)</span>
+    <table class="table table-striped">
+      <tbody>
+      <tr data-ng-repeat="reply in message.replies | filter:message.search | limitTo:message.limitTo">
+        <td>
+          <user-display username="reply.author.username" fullname="reply.author.fullname"></user-display>
+          <span class="message-monitoringview-date" title="creation: {{reply.dateCreation * 1000| amCalendar}}, update: {{reply.dateUpdate * 1000| amCalendar}}">
+            {{reply.dateCreation * 1000| amCalendar}}
+          </span>
+          <div ng-bind-html="reply.text | linky | nl2br | parseTags:reply.tags"></div>
+        </td>
+     </tr>
+     </tbody>
+   </table>
+   <button class="btn btn-default" data-ng-show="message.limitTo != message.replies.length && message.limitTo <= message.replies.length" data-ng-click="message.limitTo=message.replies.length">Display All</span>
+ </div>
+
+</section>

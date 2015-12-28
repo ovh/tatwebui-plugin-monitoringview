@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<translations>
+  <translation id="messages-nomessage">Aucun message</translation>
+  <translation id="message_send">Send</translation>
+  <translation id="message_reply">Reply</translation>
+  <translation id="message_like">Like</translation>
+  <translation id="message_unlike">Unlike</translation>
+  <translation id="message_send">Send</translation>
+  <translation id="message_reply">Reply</translation>
+  <translation id="message_read_only">You are in read-only mode in this topic.</translation>
+  <translation id="message_bookmark">Bookmark</translation>
+  <translation id="message_delete">Delete</translation>
+  <translation id="message_label_add">Add label</translation>
+  <translation id="message_characters_left">Left</translation>
+  <translation id="message_update">Update</translation>
+  <translation id="message_url">Direct Link to this message</translation>
+</translations>
