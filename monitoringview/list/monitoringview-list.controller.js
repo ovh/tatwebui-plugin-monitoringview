@@ -44,7 +44,7 @@ angular.module('TatUi')
     this.data = {
       messages: [],
       requestFrequency: 10000,
-      count: 2000,
+      count: 3000,
       skip: 0,
       isTopicBookmarks: false,
       isTopicTasks: false,
