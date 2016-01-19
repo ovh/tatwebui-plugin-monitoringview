@@ -44,7 +44,7 @@ angular.module('TatUi')
     this.data = {
       messages: [],
       requestFrequency: 10000,
-      count: 3000,
+      count: 2000,
       skip: 0,
       isTopicBookmarks: false,
       isTopicTasks: false,
@@ -179,14 +179,12 @@ angular.module('TatUi')
             origin.likers = source[i].likers;
             origin.nbLikes = source[i].nbLikes;
             origin.tags = source[i].tags;
-            self.computeStatus(origin);
           } else {
             if (!self.data.intervalTimeStamp) {
               self.data.intervalTimeStamp = source[i].dateUpdate;
             } else if (source[i].dateUpdate > self.data.intervalTimeStamp) {
               self.data.intervalTimeStamp = source[i].dateUpdate;
             }
-            self.computeStatus(source[i]);
             dest.push(source[i]);
             dest.sort(function(a, b) {
               if (a.dateCreation > b.dateCreation) {
@@ -318,9 +316,12 @@ angular.module('TatUi')
       self.currentDate = self.getCurrentDate();
       var filter = self.buildFilter({
         topic: self.topic,
-        onlyMsgRoot: true,
-        dateMinUpdate: self.data.intervalTimeStamp
+        onlyMsgRoot: true
       });
+      if (!self.filter.label && !self.filter.andLabel && !self.filter.notLabel) {
+        filter.dateMinUpdate = self.data.intervalTimeStamp;
+      }
+
       return TatEngineMessagesRsc.list(filter).$promise.then(function(
         data) {
         self.digestInformations(data);
@@ -372,7 +373,11 @@ angular.module('TatUi')
           self.topic)) {
         self.data.isFavoriteTopic = true;
       }
-      self.data.messages = self.mergeMessages(self.data.messages, data.messages);
+      if (!self.filter.label && !self.filter.andLabel && !self.filter.notLabel) {
+        self.data.messages = data.messages;
+      } else {
+        self.data.messages = self.mergeMessages(self.data.messages, data.messages);
+      }
       self.loading = false;
       self.computeStack();
     };
@@ -388,6 +393,7 @@ angular.module('TatUi')
       }
 
       for (var i = 0; i < nbTotal; i++) {
+        self.computeStatus(self.data.messages[i]);
         if (self.data.messages[i].statusText === 'AL') {
           self.data.nbAL++;
         } else if (self.data.messages[i].statusText === 'UP') {
