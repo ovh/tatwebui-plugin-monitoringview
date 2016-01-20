@@ -318,7 +318,7 @@ angular.module('TatUi')
         topic: self.topic,
         onlyMsgRoot: true
       });
-      if (!filter.label && !filter.andLabel && !filter.notLabel) {
+      if (!self.filter.label && !self.filter.andLabel && !self.filter.notLabel) {
         filter.dateMinUpdate = self.data.intervalTimeStamp;
       }
 
@@ -374,9 +374,9 @@ angular.module('TatUi')
         self.data.isFavoriteTopic = true;
       }
       if (!self.filter.label && !self.filter.andLabel && !self.filter.notLabel) {
-        self.data.messages = data.messages;
-      } else {
         self.data.messages = self.mergeMessages(self.data.messages, data.messages);
+      } else {
+        self.data.messages = data.messages;
       }
       self.loading = false;
       self.computeStack();
