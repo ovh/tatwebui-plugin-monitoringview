@@ -22,24 +22,17 @@ angular.module('TatUi')
     TatEngineTopicsRsc,
     TatEngineUserRsc,
     TatEngine,
+    TatFilter,
     Flash,
     $translate,
-    $interval,
-    $location,
-    $localStorage
+    $interval
   ) {
     'use strict';
 
     var self = this;
-    this.topic = $stateParams.topic;
-
-    self.tmpFilter = {};
-    if (!$localStorage.messagesFilters) {
-      $localStorage.messagesFilters = {};
-    }
-    if (!$localStorage.messagesFilters[this.topic]) {
-      $localStorage.messagesFilters[this.topic] = {};
-    }
+    self.filter = $rootScope.filters;
+    self.topic = $stateParams.topic;
+    self.filterDialog = { x: 380, y: 62, visible: false };
 
     this.data = {
       messages: [],
@@ -60,19 +53,16 @@ angular.module('TatUi')
       nbOther: 0
     };
 
-    this.filterPosition = {
-      x: 380,
-      y: 62,
-      visible: false
-    };
+    $scope.$on('filter-changed', function(ev, filter){
+      self.data.skip = 0;
+      self.data.displayMore = true;
+      self.filter = angular.extend(self.filter, filter);
+      self.refresh();
+    });
 
-    this.filter = {};
-
-    this.getCurrentDate = function() {
-      return moment().format("YYYY/MM/DD-HH:MM");
-    };
-
-    this.currentDate = self.getCurrentDate();
+    this.filterSearch = function() {
+      $rootScope.$broadcast('filter-changed', self.filter);
+    }
 
     /**
      * @ngdoc function
@@ -80,7 +70,7 @@ angular.module('TatUi')
      * @methodOf TatUi.controller:MessagesMonitoringViewListCtrl
      * @description Try to load more messages
      */
-    this.loadMore = function() {
+    self.loadMore = function() {
       if (!self.loading) {
         self.moreMessage();
       }
@@ -88,10 +78,8 @@ angular.module('TatUi')
 
     this.isMonitoring = function(message) {
       if (message.tags && message.tags.length >= 3) {
-        if (
-          (message.tags[0] === 'monitoring') &&
-          (message.tags[2].indexOf('item:') === 0)
-        ) {
+          if ((message.tags[0] === 'monitoring') &&
+            (message.tags[2].indexOf('item:') === 0)) {
           return true;
         }
       }
@@ -117,14 +105,14 @@ angular.module('TatUi')
       message.statusText = 'WARN';
     }
 
-    this.getItem = function(message) {
+    self.getItem = function(message) {
       if (self.isMonitoring(message)) {
         //len item: == 5
         return message.tags[2].substring(5, message.tags[2].length);
       }
     };
 
-    this.getService = function(message) {
+    self.getService = function(message) {
       if (self.isMonitoring(message)) {
         return message.tags[1];
       }
@@ -137,19 +125,21 @@ angular.module('TatUi')
      * @description Post a new message on the current topic
      * @param {string} msg Message to post
      */
-    this.createMessage = function() {
-      TatEngineMessageRsc.create({
-        text: self.currentMessage,
-        topic: self.topic
-      }).$promise.then(function(data) {
-        self.currentMessage = '';
-        self.data.messages.unshift(data.message);
-      }, function(err) {
-        TatEngine.displayReturn(err);
-      });
+    self.createMessage = function() {
+      if (self.currentMessage.length > 0) {
+        TatEngineMessageRsc.create({
+          text: self.currentMessage,
+          topic: self.topic
+        }).$promise.then(function(data) {
+          self.currentMessage = '';
+          self.data.messages.unshift(data.message);
+        }, function(err) {
+          TatEngine.displayReturn(err);
+        });
+      }
     };
 
-    this.getBrightness = function(rgb) {
+    self.getBrightness = function(rgb) {
       var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(rgb);
       return result ?
         0.2126 * parseInt(result[1], 16) +
@@ -164,7 +154,7 @@ angular.module('TatUi')
      * @description Merge messages in the current message list
      * @param {string} messages Message list to merge
      */
-    this.mergeMessages = function(dest, source) {
+    self.mergeMessages = function(dest, source) {
       if (source && _.isArray(source)) {
         for (var i = 0; i < source.length; i++) {
           var origin = _.find(dest, {
@@ -208,11 +198,12 @@ angular.module('TatUi')
      * @description Launch the timer to request messages at regular time interval
      * @param {Integer} timeInterval Milliseconds between calls
      */
-    this.beginTimer = function(timeInterval) {
+    self.beginTimer = function(timeInterval) {
       if ('undefined' === typeof self.data.timer) {
+        self.getNewMessages(); // Don't wait to execute first call
         self.data.timer = $interval(self.getNewMessages, timeInterval);
         $scope.$on(
-          '$destroy',
+          "$destroy",
           function() {
             self.stopTimer();
           }
@@ -226,7 +217,7 @@ angular.module('TatUi')
      * @methodOf TatUi.controller:MessagesMonitoringViewListCtrl
      * @description Stop the time that request messages at regular time interval
      */
-    this.stopTimer = function() {
+    self.stopTimer = function() {
       $interval.cancel(self.data.timer);
       self.data.timer = undefined;
     };
@@ -239,67 +230,9 @@ angular.module('TatUi')
      * @param {object} data Custom data to send to the API
      * @return {object} Parameters to pass to the API
      */
-    this.buildFilter = function(data) {
+    self.buildFilter = function(data) {
       return angular.extend({}, data, self.filter);
-    };
-
-    /**
-     * @ngdoc function
-     * @name filterSearch
-     * @methodOf TatUi.controller:MessagesMonitoringViewListCtrl
-     * @description Filter messages
-     */
-    this.filterSearch = function() {
-      self.data.skip = 0;
-      self.data.displayMore = true;
-      self.filter.text =
-        self.tmpFilter.filterText ? self.tmpFilter.filterText : null;
-      self.filter.label =
-        self.tmpFilter.filterInLabel ? self.tmpFilter.filterInLabel : null;
-      self.filter.andLabel =
-        self.tmpFilter.filterAndLabel ? self.tmpFilter.filterAndLabel :
-        null;
-      self.filter.notLabel =
-        self.tmpFilter.filterNotLabel ? self.tmpFilter.filterNotLabel :
-        null;
-      self.filter.tag = self.tmpFilter.filterInTag ? self.tmpFilter.filterInTag :
-        null;
-      self.filter.andTag = self.tmpFilter.filterAndTag ? self.tmpFilter.filterAndTag :
-        null;
-      self.filter.notTag = self.tmpFilter.filterNotTag ? self.tmpFilter.filterNotTag :
-        null;
-
-      if (self.tmpFilter.idMessage === '-1') {
-        $rootScope.$broadcast('topic-change', {
-          topic: self.topic,
-          reload: true
-        });
-      } else {
-        self.filter.idMessage = $stateParams.idMessage
-      }
-
-      self.setFilter('filterInLabel');
-      self.setFilter('filterAndLabel');
-      self.setFilter('filterNotLabel');
-      self.setFilter('filterInTag');
-      self.setFilter('filterAndTag');
-      self.setFilter('filterNotTag');
-
-      this.refresh();
-    };
-
-    this.setFilter = function(key) {
-      if (self.tmpFilter[key] === '' || self.tmpFilter[key] === undefined) {
-        $location.search(key, null);
-      } else {
-        $location.search(key, self.tmpFilter[key]);
-      }
-      $localStorage.messagesFilters[self.topic][key] = self.tmpFilter[key];
-    };
-
-    this.onCall = function(text) {
-      self.currentMessage = text;
-    };
+    }
 
     /**
      * @ngdoc function
@@ -307,29 +240,22 @@ angular.module('TatUi')
      * @methodOf TatUi.controller:MessagesMonitoringViewListCtrl
      * @description Request for new messages
      */
-    this.getNewMessages = function() {
+    self.getNewMessages = function() {
       if (self.loading) {
         console.log("messages list already in refresh...");
         return;
       }
       self.loading = true;
-      self.currentDate = self.getCurrentDate();
       var filter = self.buildFilter({
         topic: self.topic,
         onlyMsgRoot: true
       });
-      if (!self.filter.label && !self.filter.andLabel && !self.filter.notLabel) {
-        filter.dateMinUpdate = self.data.intervalTimeStamp;
-      }
-
-      return TatEngineMessagesRsc.list(filter).$promise.then(function(
-        data) {
+      return TatEngineMessagesRsc.list(filter).$promise.then(function(data) {
         self.digestInformations(data);
       }, function(err) {
         TatEngine.displayReturn(err);
         self.loading = false;
       });
-
     };
 
     /**
@@ -339,7 +265,7 @@ angular.module('TatUi')
      * @description Request more messages
      * @return {object} Promise
      */
-    this.moreMessage = function() {
+    self.moreMessage = function() {
       self.loading = true;
       var filter = self.buildFilter({
         topic: self.topic,
@@ -367,22 +293,18 @@ angular.module('TatUi')
      * @description
      * @return
      */
-    this.digestInformations = function(data) {
+    self.digestInformations = function(data) {
       self.data.isTopicRw = data.isTopicRw;
-      if (_.contains(Authentication.getIdentity().favoritesTopics, '/' +
-          self.topic)) {
+      if (_.contains(Authentication.getIdentity().favoritesTopics, '/' + self.topic)) {
         self.data.isFavoriteTopic = true;
       }
-      if (!self.filter.label && !self.filter.andLabel && !self.filter.notLabel) {
-        self.data.messages = self.mergeMessages(self.data.messages, data.messages);
-      } else {
-        self.data.messages = data.messages;
-      }
+      self.data.messages = self.mergeMessages(self.data.messages, data.messages);
       self.loading = false;
       self.computeStack();
     };
 
-    this.computeStack = function() {
+
+    self.computeStack = function() {
       var nbTotal = self.data.messages.length;
       self.data.nbUP = 0;
       self.data.nbAL = 0;
@@ -393,7 +315,7 @@ angular.module('TatUi')
       }
 
       for (var i = 0; i < nbTotal; i++) {
-        self.computeStatus(self.data.messages[i]);
+        this.computeStatus(self.data.messages[i]);
         if (self.data.messages[i].statusText === 'AL') {
           self.data.nbAL++;
         } else if (self.data.messages[i].statusText === 'UP') {
@@ -422,44 +344,12 @@ angular.module('TatUi')
 
     /**
      * @ngdoc function
-     * @name initFiltersFromParam
-     * @methodOf TatUi.controller:MessagesMonitoringViewListCtrl
-     * @description
-     */
-    this.initFiltersFromParam = function() {
-      self.initFilterField('filterInLabel');
-      self.initFilterField('filterAndLabel');
-      self.initFilterField('filterNotLabel');
-      self.initFilterField('filterInTag');
-      self.initFilterField('filterAndTag');
-      self.initFilterField('filterNotTag');
-    };
-
-    /**
-     * @ngdoc function
-     * @name initFilterField
-     * @methodOf TatUi.controller:MessagesMonitoringViewListCtrl
-     * @description
-     */
-    this.initFilterField = function(key) {
-      if ($stateParams[key]) {
-        self.tmpFilter[key] = $stateParams[key];
-      } else if ($localStorage.messagesFilters[self.topic][key]) {
-        self.tmpFilter[key] = $localStorage.messagesFilters[self.topic][key];
-      }
-    };
-
-    /**
-     * @ngdoc function
      * @name init
      * @methodOf TatUi.controller:MessagesMonitoringViewListCtrl
      * @description Initialize list messages page. Get list of messages from Tat Engine
      */
-    this.init = function() {
+    self.init = function() {
       $rootScope.$broadcast('menu-expand', self.topic.split('/'));
-
-      self.initFiltersFromParam();
-      self.filterSearch();
 
       TatEngineTopicsRsc.list({
         topic: self.topic
@@ -473,17 +363,18 @@ angular.module('TatUi')
         self.data.isTopicDeletableMsg = self.data.topic.canDeleteMsg;
         self.data.isTopicUpdatableAllMsg = self.data.topic.canUpdateAllMsg;
         self.data.isTopicDeletableAllMsg = self.data.topic.canDeleteAllMsg;
-        if (self.data.topic.topic.indexOf('/Private/' +
-            Authentication.getIdentity().username + '/Bookmarks') ===
+        if (self.data.topic.topic.indexOf("/Private/" +
+            Authentication.getIdentity().username + "/Bookmarks") ===
           0) {
           self.data.isTopicBookmarks = true;
-        } else if (self.data.topic.topic.indexOf('/Private/' +
-            Authentication.getIdentity().username + '/Tasks') === 0) {
+        } else if (self.data.topic.topic.indexOf("/Private/" +
+            Authentication.getIdentity().username + "/Tasks") === 0) {
           self.data.isTopicTasks = true;
-        } else if (self.data.topic.topic.indexOf('/Private/' +
-            Authentication.getIdentity().username + '/DM/') === 0) {
+          self.data.isTopicDeletableMsg = true;
+        } else if (self.data.topic.topic.indexOf("/Private/" +
+            Authentication.getIdentity().username + "/DM/") === 0) {
           self.data.isTopicDeletableMsg = false;
-        } else if (self.data.topic.topic.indexOf('/Private/' +
+        } else if (self.data.topic.topic.indexOf("/Private/" +
             Authentication.getIdentity().username) === 0) {
           self.data.isTopicDeletableMsg = true;
         }
@@ -493,14 +384,13 @@ angular.module('TatUi')
       });
     };
 
-
     /**
      * @ngdoc function
      * @name refresh
      * @methodOf TatUi.controller:MessagesMonitoringViewListCtrl
      * @description Refresh all the messages
      */
-    this.refresh = function() {
+    self.refresh = function() {
       $rootScope.$broadcast('loading', true);
       self.data.currentTimestamp = Math.ceil(new Date().getTime() / 1000);
       self.data.messages = [];
@@ -509,17 +399,13 @@ angular.module('TatUi')
       });
     };
 
-    this.setMessage = function(message) {
+    self.setMessage = function(message) {
       message.displayed = true;
       $scope.message = message;
     };
 
-    this.toggleMessage = function(message) {
+    self.toggleMessage = function(message) {
       var same = false;
-      if ($scope.message) {
-        // unload previous replies
-        $scope.message.replies = [];
-      }
       if ($scope.message && $scope.message._id == message._id) {
         same = true;
       }
@@ -537,12 +423,12 @@ angular.module('TatUi')
       }
     };
 
-    this.closeMessage = function(message) {
+    self.closeMessage = function(message) {
       $scope.message.displayed = false;
       $scope.message = null;
     };
 
-    this.containsLabel = function(message, labelText) {
+    self.containsLabel = function(message, labelText) {
       if (message.inReplyOfIDRoot) {
         return false;
       }
@@ -558,5 +444,5 @@ angular.module('TatUi')
       return r;
     };
 
-    this.init();
+    self.init();
   });

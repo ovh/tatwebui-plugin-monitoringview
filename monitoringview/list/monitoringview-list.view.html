@@ -1,96 +1,25 @@
-<div class="wrapper message-monitoringview-manager">
+<div class="tat-view tat-monitoringview">
 
-  <div movable-dialog title="'Filter'" ng-model="ctrl.filterPosition">
-    <div class="filter-dialog">
-      <form>
-        <div class="input-group">
-          <span class="input-group-addon" id="filter-fulltext"><i class="fa fa-font"></i></span>
-          <input type="text" class="form-control" placeholder="text" ng-model="ctrl.tmpFilter.filterText" aria-describedby="filter-fulltext">
-        </div>
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="open,doing" ng-model="ctrl.tmpFilter.filterInLabel" aria-describedby="filter-labels">
-          <span id="helpBlock" class="help-block">
-            in <i class="fa fa-tags"></i> : Contains one or many labels of this list
-          </span>
-        </div>
-
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="open,doing" ng-model="ctrl.tmpFilter.filterAndLabel" aria-describedby="filter-labels">
-          <span id="helpBlock" class="help-block">
-            all <i class="fa fa-tags"></i> : Contains all labels in this list
-          </span>
-        </div>
-
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="done" ng-model="ctrl.tmpFilter.filterNotLabel" aria-describedby="filter-hide-labels">
-          <span id="helpBlock" class="help-block">
-            hide <i class="fa fa-tags"></i> : Hide all labels in this list
-          </span>
-        </div>
-
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="PCC,STOCKAGE" ng-model="ctrl.tmpFilter.filterInTag" aria-describedby="filter-tags">
-          <span id="helpBlock" class="help-block">
-            in <i class="glyphicon glyphicon-copyright-mark"></i> : Contains one or many tags of this list
-          </span>
-        </div>
-
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="PCC,STOCKAGE" ng-model="ctrl.tmpFilter.filterAndTag" aria-describedby="filter-tags">
-          <span id="helpBlock" class="help-block">
-            all <i class="glyphicon glyphicon-copyright-mark"></i> : Contains all tags in this list
-          </span>
-        </div>
-
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="PCC,STOCKAGE" ng-model="ctrl.tmpFilter.filterNotTag" aria-describedby="filter-hide-tags">
-          <span id="helpBlock" class="help-block">
-            hide <i class="glyphicon glyphicon-copyright-mark"></i> : Hide all tags in this list
-          </span>
-        </div>
-        <div class="form-group">
-          <button type="submit" class="btn btn-primary btn-xs" ng-click="ctrl.filterSearch()">Search</button>
-        </div>
-      </form>
-    </div>
+  <div ng-hide="ctrl.data.isTopicRw" class="alert alert-info tat-alert-fixed">
+    <i class="fa fa-info-circle"></i> {{ 'shared_message_read_only' | translate }}
   </div>
 
   <div class="row">
       <div class="btn-group">
-         <button class="btn btn-default" data-ng-click="ctrl.filterPosition.visible = true"><i class="fa fa-filter"></i></button>
-         <button class="btn btn-default" data-ng-click="ctrl.tmpFilter.filterAndLabel = ''; ctrl.filterSearch()">{{ctrl.data.messages.length}} ALL</button>
-         <button class="btn btn-danger" data-ng-click="ctrl.tmpFilter.filterAndLabel = 'AL'; ctrl.filterSearch()">{{ctrl.data.nbAL}} AL</button>
-         <button class="btn btn-success" data-ng-click="ctrl.tmpFilter.filterAndLabel = 'UP'; ctrl.filterSearch()">{{ctrl.data.nbUP}} UP</button>
-         <button class="btn btn-warning" data-ng-click="ctrl.tmpFilter.filterAndLabel = ''; ctrl.filterSearch()">{{ctrl.data.nbOther}} Other(s)</button>
+        <a class="btn btn-default" ng-click="ctrl.filterDialog.visible=!ctrl.filterDialog.visible" ng-class="{'open': ctrl.filterDialog.visible}">
+          <i class="fa fa-filter"></i>
+        </a>
+         <button class="btn btn-default" data-ng-click="ctrl.filter.andLabel = ''; ctrl.filterSearch()">{{ctrl.data.messages.length}} ALL</button>
+         <button class="btn btn-danger" data-ng-click="ctrl.filter.andLabel = 'AL'; ctrl.filterSearch()">{{ctrl.data.nbAL}} AL</button>
+         <button class="btn btn-success" data-ng-click="ctrl.filter.andLabel = 'UP'; ctrl.filterSearch()">{{ctrl.data.nbUP}} UP</button>
+         <button class="btn btn-warning" data-ng-click="ctrl.filter.andLabel = ''; ctrl.filterSearch()">{{ctrl.data.nbOther}} Other(s)</button>
+         <message-filter-bar></message-filter-bar>
+         <div movable-dialog title="'Filter'" ng-model="ctrl.filterDialog">
+           <message-filter></message-filter>
+         </div>
        </div>
-
-      <span class="message-filters">
-        <span class="badge" data-ng-click="ctrl.filterPosition.visible = true" data-ng-if="ctrl.filter.text"><i class="fa fa-font"></i> {{ctrl.filter.text}}
-            <a role="button" ng-click="ctrl.tmpFilter.filterText = ''; ctrl.filterSearch()"><i class="fa fa-times"></i></a>
-        </span>
-        <span class="badge" data-ng-click="ctrl.filterPosition.visible = true" data-ng-if="ctrl.filter.label">in <i class="fa fa-tags"></i> : {{ctrl.filter.label}}
-            <a role="button" ng-click="ctrl.tmpFilter.filterInLabel = ''; ctrl.filterSearch()"><i class="fa fa-times"></i></a>
-        </span>
-        <span class="badge" data-ng-click="ctrl.filterPosition.visible = true" data-ng-if="ctrl.filter.andLabel">all <i class="fa fa-tags"></i> : {{ctrl.filter.andLabel}}
-            <a role="button" ng-click="ctrl.tmpFilter.filterAndLabel = ''; ctrl.filterSearch()"><i class="fa fa-times"></i></a>
-        </span>
-        <span class="badge" data-ng-click="ctrl.filterPosition.visible = true" data-ng-if="ctrl.filter.notLabel">hide <i class="fa fa-tags"></i> : {{ctrl.filter.notLabel}}
-            <a role="button" ng-click="ctrl.tmpFilter.filterNotLabel = ''; ctrl.filterSearch()"><i class="fa fa-times"></i></a>
-        </span>
-        <span class="badge" data-ng-click="ctrl.filterPosition.visible = true" data-ng-if="ctrl.filter.tag">in <i class="glyphicon glyphicon-copyright-mark"></i> {{ctrl.filter.tag}}
-            <a role="button" ng-click="ctrl.tmpFilter.filterInTag = ''; ctrl.filterSearch()"><i class="fa fa-times"></i></a>
-        </span>
-        <span class="badge" data-ng-click="ctrl.filterPosition.visible = true" data-ng-if="ctrl.filter.andTag">all <i class="glyphicon glyphicon-copyright-mark"></i> : {{ctrl.filter.andTag}}
-            <a role="button" ng-click="ctrl.tmpFilter.filterAndTag = ''; ctrl.filterSearch()"><i class="fa fa-times"></i></a>
-        </span>
-        <span class="badge" data-ng-click="ctrl.filterPosition.visible = true" data-ng-if="ctrl.filter.notTag">hide <i class="glyphicon glyphicon-copyright-mark"></i> : {{ctrl.filter.notTag}}
-            <a role="button" ng-click="ctrl.tmpFilter.filterNoTag = ''; ctrl.filterSearch()"><i class="fa fa-times"></i></a>
-        </span>
-        <span class="badge" data-ng-if="ctrl.filter.idMessage"> <i class="fa fa-envelope"></i> message : {{ctrl.filter.idMessage}}
-            <a role="button" ng-click="ctrl.tmpFilter.idMessage = '-1'; ctrl.filterSearch()"><i class="fa fa-times"></i></a>
-        </span>
-      </span>
   </div>
+
   <uib-progress><uib-bar ng-repeat="bar in ctrl.data.stacked track by $index" value="bar.value" type="{{bar.type}}"><span>{{bar.value}}%</span></uib-bar></uib-progress>
 
   <div class="row">
@@ -135,9 +64,10 @@
     </div>
   </div>
 
-  <div class="row">
-    <button data-ng-disabled="!ctrl.data.displayMore" data-ng-click="ctrl.loadMore()" class="btn btn-default">
-      <span data-ng-show="!ctrl.data.displayMore">No</span> More
+  <div class="row more">
+    <button ng-disabled="!ctrl.data.displayMore" ng-click="ctrl.loadMore()" class="btn btn-default">
+      <span ng-show="ctrl.data.displayMore"><i class="fa fa-plus-circle"></i></span>
+      {{ 'shared_message_show_more' | translate }}
     </button>
   </div>
 </div>
