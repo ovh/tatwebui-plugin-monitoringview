@@ -30,7 +30,7 @@ angular.module('TatUi')
     'use strict';
 
     var self = this;
-    self.filter = $rootScope.filters;
+    self.filter = TatFilter.getCurrent();
     self.topic = $stateParams.topic;
     self.filterDialog = { x: 380, y: 62, visible: false };
 
