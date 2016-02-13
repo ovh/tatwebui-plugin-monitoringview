@@ -19,6 +19,7 @@ angular.module('TatUi')
     WebSocket,
     TatEngineMessagesRsc,
     TatEngineMessageRsc,
+    TatEngineTopicRsc,
     TatEngineUserRsc,
     TatEngine,
     TatFilter,
