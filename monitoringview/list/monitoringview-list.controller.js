@@ -19,7 +19,6 @@ angular.module('TatUi')
     WebSocket,
     TatEngineMessagesRsc,
     TatEngineMessageRsc,
-    TatEngineTopicsRsc,
     TatEngineUserRsc,
     TatEngine,
     TatFilter,
@@ -351,14 +350,14 @@ angular.module('TatUi')
     self.init = function() {
       $rootScope.$broadcast('menu-expand', self.topic.split('/'));
 
-      TatEngineTopicsRsc.list({
-        topic: self.topic
+      TatEngineTopicRsc.oneTopic({
+        action: self.topic
       }).$promise.then(function(data) {
-        if ((!data.topics) || (!data.topics.length)) {
+        if (!data.topic) {
           Flash.create('danger', $translate.instant('topics_notopic'));
           return;
         }
-        self.data.topic = data.topics[0];
+        self.data.topic = data.topic;
         self.data.isTopicUpdatableMsg = self.data.topic.canUpdateMsg;
         self.data.isTopicDeletableMsg = self.data.topic.canDeleteMsg;
         self.data.isTopicUpdatableAllMsg = self.data.topic.canUpdateAllMsg;
