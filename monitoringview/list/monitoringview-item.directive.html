@@ -1,78 +1,62 @@
 <section class="message-monitoringview-wrapper " data-ng-hide="message.hide">
   <div class="row">
 
-    <div class="messages-run-actions-root" ng-hide="message.inReplyOfIDRoot != ''">
-        <button title="{{ (MessageMonitoringviewItemCtrl.hasLiked(message) ? 'message_unlike' : 'message_like') | translate }}"
-                class="btn btn-default" data-ng-click="MessageMonitoringviewItemCtrl.toggleLikeMessage(message)">
-             <i data-ng-class="{'fa fa-thumbs-o-up': !MessageMonitoringviewItemCtrl.hasLiked(message), 'fa fa-thumbs-o-down':MessageMonitoringviewItemCtrl.hasLiked(message)}"></i>
-         </button>
+      <div ng-hide="message.inReplyOfIDRoot != ''">
 
-        <button title="{{ 'message_reply' | translate }}"
-                class="btn btn-default" data-ng-click="replying=true">
-            <i class="fa fa-comment-o"></i>
-        </button>
+        <!-- Message controls -->
+        <div class="btn-group">
 
-        <button title="Set to done"
-                ng-if="MessageMonitoringviewItemCtrl.canDoneMessage"
-                class="btn btn-default" data-ng-click="MessageMonitoringviewItemCtrl.doneMessage(message)">
-            <i class="fa fa-tasks"></i>
-            <i class="fa fa-check"></i>
-        </button>
+          <!-- Reply -->
+          <button
+            title="{{ 'shared_message_reply' | translate }}"
+            class="btn btn-default"
+            ng-click="replying=!replying"
+            ng-class="{'open': replying}"
+            ng-disabled="message.updating || message.deleting">
+            <i class="fa fa-comments"></i>
+          </button>
 
-        <button title="Remove from my tasks"
-                ng-if="MessageMonitoringviewItemCtrl.canDeleteFromTasksMessage"
-                class="btn btn-default" data-ng-click="MessageMonitoringviewItemCtrl.deleteFromTasksMessage(message)">
-            <i class="fa fa-tasks"></i>
-            <i class="fa fa-ban"></i>
-        </button>
+          <!-- Edit message -->
+          <button
+            title="{{ 'shared_message_update' | translate }}"
+            class="btn btn-default"
+            ng-click="message.updating=!message.updating"
+            ng-class="{'open': message.updating}"
+            ng-if="isTopicUpdatableMsg || isTopicUpdatableAllMsg"
+            ng-disabled="replying || message.deleting">
+            <i class="fa fa-pencil"></i>
+          </button>
 
-        <button title="Add to my tasks"
-                ng-if="MessageMonitoringviewItemCtrl.canAddToTasksMessage"
-                class="btn btn-default" data-ng-click="MessageMonitoringviewItemCtrl.addToTasksMessage(message)">
-            <i class="fa fa-tasks"></i>
-            <i class="fa fa-plus"></i>
-        </button>
+          <!-- Delete message -->
+          <button
+            title="{{ 'shared_message_delete' | translate }}"
+            class="btn btn-default"
+            ng-click="message.deleting=!message.deleting"
+            ng-class="{'open': message.deleting}"
+            ng-disabled="replying || message.updating"
+            ng-if="isTopicDeletableMsg || isTopicDeletableAllMsg">
+            <i class="fa fa-trash"></i>
+          </button>
 
-        <button class="btn btn-default"
-                title="{{ 'message_bookmark' | translate }}"
-                data-ng-click="MessageMonitoringviewItemCtrl.bookmarkMessage()">
-            <i class="fa fa-bookmark-o"></i>
-        </button>
-
-        <button class="btn btn-default" data-ng-click="message.updating=true"
-        ng-if="isTopicUpdatableMsg || isTopicUpdatableAllMsg">
-            <i class="fa fa-pencil" title="{{ 'message_update' | translate }}"></i>
-        </button>
-
-        <button class="btn btn-default" data-ng-click="message.deleting=true"
-        ng-if="isTopicDeletableMsg || isTopicDeletableAllMsg">
-            <i class="fa fa-trash" title="{{ 'message_delete' | translate }}"></i>
-        </button>
-
-        <button title="{{ 'message_label_add' | translate }}"
-                class="btn btn-default" data-ng-click="addingLabel=!addingLabel">
-            <i class="fa fa-tag"></i>
-        </button>
-
-        <button title="{{ 'message_url' | translate }}"
-                class="btn btn-default" data-ng-click="MessageMonitoringviewItemCtrl.urlMessage(message)">
-            <i class="fa fa-link"></i>
-        </button>
-
-        <div class="input-group" ng-show="addingLabel">
-          <div class="input-group-addon monitoringview-colorpick">
-            <spectrum-colorpicker ng-show="addingLabel && MessageMonitoringviewItemCtrl.initColor(message)"
-              ng-model="message.currentLabel.color"
-              palette="MessageMonitoringviewItemCtrl.palette"
-              options="{showInput: true, showAlpha: true, preferredFormat:'Hex',
-                showPalette: true,
-                togglePaletteOnly: false}" ></spectrum-colorpicker>
-          </div>
-          <form data-ng-submit="MessageMonitoringviewItemCtrl.addLabel(message)">
-            <input class="form-control" type="text" data-ng-model="message.currentLabel.text" placeholder="{{ 'message_label_add' | translate}}">
-          </form>
         </div>
-    </div>
+
+        <!-- Message actions -->
+        <div class="btn-group">
+
+          <!-- Add label -->
+          <button
+            title="{{ 'shared_message_label_add' | translate }}"
+            class="btn btn-default"
+            ng-class="{'open': addingLabel}"
+            ng-click="addingLabel=!addingLabel">
+            <i class="fa fa-tag"></i>
+          </button>
+
+        </div>
+
+        <!-- Add Label -->
+        <message-label message="message" topic="topic" is-displayed="addingLabel"></message-label>
+      </div>
 
       <user-display username="message.author.username" fullname="message.author.fullname"></user-display>
       <span class="message-monitoringview-date">{{message.dateCreation * 1000| amCalendar}}</span>

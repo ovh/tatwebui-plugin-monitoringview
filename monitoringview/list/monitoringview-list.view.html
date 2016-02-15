@@ -6,17 +6,21 @@
 
   <div class="row">
       <div class="btn-group">
+        <a class="btn btn-default" ng-disabled="!ctrl.data.displayMore" ng-click="ctrl.loadMore()">
+          <span ng-show="ctrl.data.displayMore"><i class="fa fa-plus-circle"></i></span>
+          {{ 'shared_message_show_more' | translate }}
+        </a>
         <a class="btn btn-default" ng-click="ctrl.filterDialog.visible=!ctrl.filterDialog.visible" ng-class="{'open': ctrl.filterDialog.visible}">
           <i class="fa fa-filter"></i>
         </a>
-         <button class="btn btn-default" data-ng-click="ctrl.filter.andLabel = ''; ctrl.filterSearch()">{{ctrl.data.messages.length}} ALL</button>
-         <button class="btn btn-danger" data-ng-click="ctrl.filter.andLabel = 'AL'; ctrl.filterSearch()">{{ctrl.data.nbAL}} AL</button>
-         <button class="btn btn-success" data-ng-click="ctrl.filter.andLabel = 'UP'; ctrl.filterSearch()">{{ctrl.data.nbUP}} UP</button>
-         <button class="btn btn-warning" data-ng-click="ctrl.filter.andLabel = ''; ctrl.filterSearch()">{{ctrl.data.nbOther}} Other(s)</button>
-         <message-filter-bar></message-filter-bar>
-         <div movable-dialog title="'Filter'" ng-model="ctrl.filterDialog">
-           <message-filter topic="ctrl.data.topic"></message-filter>
-         </div>
+        <button class="btn btn-default" data-ng-click="ctrl.filter.andLabel = ''; ctrl.filterSearch()">{{ctrl.data.messages.length}} ALL</button>
+        <button class="btn btn-danger" data-ng-click="ctrl.filter.andLabel = 'AL'; ctrl.filterSearch()">{{ctrl.data.nbAL}} AL</button>
+        <button class="btn btn-success" data-ng-click="ctrl.filter.andLabel = 'UP'; ctrl.filterSearch()">{{ctrl.data.nbUP}} UP</button>
+        <button class="btn btn-warning" data-ng-click="ctrl.filter.andLabel = ''; ctrl.filterSearch()">{{ctrl.data.nbOther}} Other(s)</button>
+        <message-filter-bar></message-filter-bar>
+        <div movable-dialog title="'Filter'" ng-model="ctrl.filterDialog">
+         <message-filter topic="ctrl.data.topic"></message-filter>
+        </div>
        </div>
   </div>
 
@@ -64,10 +68,4 @@
     </div>
   </div>
 
-  <div class="row more">
-    <button ng-disabled="!ctrl.data.displayMore" ng-click="ctrl.loadMore()" class="btn btn-default">
-      <span ng-show="ctrl.data.displayMore"><i class="fa fa-plus-circle"></i></span>
-      {{ 'shared_message_show_more' | translate }}
-    </button>
-  </div>
 </div>
