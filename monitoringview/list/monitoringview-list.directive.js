@@ -68,7 +68,7 @@ angular.module('TatUi').directive('messagesMonitoringviewItem', function(
       this.replyMessage = function(message) {
         $scope.replying = false;
         TatEngineMessageRsc.create({
-          'topic': $scope.topic,
+          'topic': $scope.topic.topic,
           'idReference': message._id,
           'text': self.replyText
         }).$promise.then(function(resp) {
@@ -114,7 +114,7 @@ angular.module('TatUi').directive('messagesMonitoringviewItem', function(
       this.updateMessage = function(message) {
         message.updating = false;
         TatEngineMessageRsc.update({
-          'topic': $scope.topic,
+          'topic': $scope.topic.topic,
           'idReference': message._id,
           'text': message.text,
           'action': 'update',
@@ -147,7 +147,7 @@ angular.module('TatUi').directive('messagesMonitoringviewItem', function(
             toRefresh = true;
             TatEngineMessageRsc.update({
               'action': 'unlabel',
-              'topic': $scope.topic,
+              'topic': $scope.topic.topic,
               'idReference': $scope.message._id,
               'text': l.text
             }).$promise.then(function(resp) {
@@ -167,7 +167,7 @@ angular.module('TatUi').directive('messagesMonitoringviewItem', function(
 
       this.urlMessage = function(message) {
         $rootScope.$broadcast('topic-change', {
-          topic: $scope.topic,
+          topic: $scope.topic.topic,
           idMessage: message._id,
           reload: true
         });
@@ -176,7 +176,7 @@ angular.module('TatUi').directive('messagesMonitoringviewItem', function(
       this.init = function(message) {
         message.loading = true;
         return TatEngineMessagesRsc.list({
-          topic: $scope.topic,
+          topic: $scope.topic.topic,
           treeView: "onetree",
           idMessage: message._id,
           limit: 1,
