@@ -167,7 +167,7 @@ angular.module('TatUi').directive('messagesMonitoringviewItem', function(
 
       this.urlMessage = function(message) {
         $rootScope.$broadcast('topic-change', {
-          topic: $scope.topic.topic,
+          topic: $scope.topic.topic.indexOf("/") === 0 ? $scope.topic.topic.substr(1) : $scope.topic.topic,
           idMessage: message._id,
           reload: true
         });
@@ -176,7 +176,7 @@ angular.module('TatUi').directive('messagesMonitoringviewItem', function(
       this.init = function(message) {
         message.loading = true;
         return TatEngineMessagesRsc.list({
-          topic: $scope.topic.topic,
+          topic: $scope.topic.topic.indexOf("/") === 0 ? $scope.topic.topic.substr(1) : $scope.topic.topic,
           treeView: "onetree",
           idMessage: message._id,
           limit: 1,
