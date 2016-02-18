@@ -16,11 +16,9 @@ angular.module('TatUi')
     $rootScope,
     $stateParams,
     Authentication,
-    WebSocket,
     TatEngineMessagesRsc,
     TatEngineMessageRsc,
     TatEngineTopicRsc,
-    TatEngineUserRsc,
     TatEngine,
     TatFilter,
     Flash,
@@ -39,8 +37,6 @@ angular.module('TatUi')
       requestFrequency: 10000,
       count: 2000,
       skip: 0,
-      isTopicBookmarks: false,
-      isTopicTasks: false,
       isTopicDeletableMsg: false,
       isTopicDeletableAllMsg: false,
       isTopicUpdatableMsg: false,
@@ -364,12 +360,7 @@ angular.module('TatUi')
         self.data.isTopicUpdatableAllMsg = self.data.topic.canUpdateAllMsg;
         self.data.isTopicDeletableAllMsg = self.data.topic.canDeleteAllMsg;
         if (self.data.topic.topic.indexOf("/Private/" +
-            Authentication.getIdentity().username + "/Bookmarks") ===
-          0) {
-          self.data.isTopicBookmarks = true;
-        } else if (self.data.topic.topic.indexOf("/Private/" +
             Authentication.getIdentity().username + "/Tasks") === 0) {
-          self.data.isTopicTasks = true;
           self.data.isTopicDeletableMsg = true;
         } else if (self.data.topic.topic.indexOf("/Private/" +
             Authentication.getIdentity().username + "/DM/") === 0) {
