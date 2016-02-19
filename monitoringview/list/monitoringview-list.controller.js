@@ -198,12 +198,7 @@ angular.module('TatUi')
       if ('undefined' === typeof self.data.timer) {
         self.getNewMessages(); // Don't wait to execute first call
         self.data.timer = $interval(self.getNewMessages, timeInterval);
-        $scope.$on(
-          "$destroy",
-          function() {
-            self.stopTimer();
-          }
-        );
+        $scope.$on("$destroy", function() { self.stopTimer(); });
       }
     };
 
@@ -244,7 +239,9 @@ angular.module('TatUi')
       self.loading = true;
       var filter = self.buildFilter({
         topic: self.topic,
-        onlyMsgRoot: true
+        onlyMsgRoot: true,
+        limit: self.data.count,
+        skip: 0
       });
       return TatEngineMessagesRsc.list(filter).$promise.then(function(data) {
         self.digestInformations(data);
@@ -359,14 +356,11 @@ angular.module('TatUi')
         self.data.isTopicDeletableMsg = self.data.topic.canDeleteMsg;
         self.data.isTopicUpdatableAllMsg = self.data.topic.canUpdateAllMsg;
         self.data.isTopicDeletableAllMsg = self.data.topic.canDeleteAllMsg;
-        if (self.data.topic.topic.indexOf("/Private/" +
-            Authentication.getIdentity().username + "/Tasks") === 0) {
+        if (self.data.topic.topic.indexOf("/Private/" + Authentication.getIdentity().username + "/Tasks") === 0) {
           self.data.isTopicDeletableMsg = true;
-        } else if (self.data.topic.topic.indexOf("/Private/" +
-            Authentication.getIdentity().username + "/DM/") === 0) {
+        } else if (self.data.topic.topic.indexOf("/Private/" + Authentication.getIdentity().username + "/DM/") === 0) {
           self.data.isTopicDeletableMsg = false;
-        } else if (self.data.topic.topic.indexOf("/Private/" +
-            Authentication.getIdentity().username) === 0) {
+        } else if (self.data.topic.topic.indexOf("/Private/" + Authentication.getIdentity().username) === 0) {
           self.data.isTopicDeletableMsg = true;
         }
         self.beginTimer(self.data.requestFrequency);
