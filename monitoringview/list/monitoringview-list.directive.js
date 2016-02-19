@@ -16,27 +16,15 @@ angular.module('TatUi').directive('messagesMonitoringviewItem', function(
     scope: {
       message: '=',
       topic: '=',
-      isTopicDeletableMsg: "=",
-      isTopicUpdatableMsg: "=",
-      isTopicDeletableAllMsg: "=",
-      isTopicUpdatableAllMsg: "=",
-      isTopicRw: "="
+      isTopicDeletableMsg: '=',
+      isTopicUpdatableMsg: '=',
+      isTopicDeletableAllMsg: '=',
+      isTopicUpdatableAllMsg: '=',
+      isTopicRw: '='
     },
     replace: true,
     templateUrl: '../build/tatwebui-plugin-monitoringview/monitoringview/list/monitoringview-item.directive.html',
-    link: function(scope, element) {
-      var listWrapper = element.find('div.message-monitoringview-replies');
-      listWrapper.append(
-        '<div messages-monitoringview-list="message.replies" ' +
-        'topic="topic" ' +
-        'is-topic-deletable-msg="isTopicDeletableMsg" ' +
-        'is-topic-updatable-msg="isTopicUpdatableMsg" ' +
-        'is-topic-deletable-all-msg="isTopicDeletableAllMsg" ' +
-        'is-topic-updatable-all-msg="isTopicUpdatableAllMsg" ' +
-        'is-topic-rw="isTopicRw"></div>');
-      $compile(listWrapper)(scope);
-    },
-    controllerAs: 'MessageMonitoringviewItemCtrl',
+    controllerAs: 'ctrl',
     /**
      * @ngdoc controller
      * @name TatUi.controller:messagesItem

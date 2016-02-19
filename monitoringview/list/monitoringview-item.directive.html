@@ -1,31 +1,10 @@
-<section class="message-monitoringview-wrapper " data-ng-hide="message.hide">
-  <div class="row">
+<section class="tat-detail-pane monitoringview" ng-hide="message.hide">
+    <div class="row">
 
       <div ng-hide="message.inReplyOfIDRoot != ''">
 
         <!-- Message controls -->
         <div class="btn-group">
-
-          <!-- Reply -->
-          <button
-            title="{{ 'shared_message_reply' | translate }}"
-            class="btn btn-default"
-            ng-click="replying=!replying"
-            ng-class="{'open': replying}"
-            ng-disabled="message.updating || message.deleting">
-            <i class="fa fa-comments"></i>
-          </button>
-
-          <!-- Edit message -->
-          <button
-            title="{{ 'shared_message_update' | translate }}"
-            class="btn btn-default"
-            ng-click="message.updating=!message.updating"
-            ng-class="{'open': message.updating}"
-            ng-if="isTopicUpdatableMsg || isTopicUpdatableAllMsg"
-            ng-disabled="replying || message.deleting">
-            <i class="fa fa-pencil"></i>
-          </button>
 
           <!-- Delete message -->
           <button
@@ -61,41 +40,17 @@
       <user-display username="message.author.username" fullname="message.author.fullname"></user-display>
       <span class="message-monitoringview-date">{{message.dateCreation * 1000| amCalendar}}</span>
       <span class="badge tlabel"
-            style="background-color: {{label.color}}; color: {{MessageMonitoringviewItemCtrl.getBrightness(label.color)>128 ? '#000000' : '#ffffff' }}"
+            style="background-color: {{label.color}}; color: {{ctrl.getBrightness(label.color)>128 ? '#000000' : '#ffffff' }}"
             data-ng-repeat="label in message.labels track by label.text">
           <i class="fa fa-tags"></i> {{label.text}}
-          <a role="button" data-ng-click="MessageMonitoringviewItemCtrl.removeLabel(message, label.text)">X</a>
+          <a role="button" data-ng-click="ctrl.removeLabel(message, label.text)">X</a>
       </span>
 
       <div class="message-monitoringview-content" ng-bind-html="message.text | linky | nl2br | parseTags:message.tags"></div>
 
-      <div class="message-monitoringview-reply" data-ng-show="replying">
-          <textarea class="form-control" data-ng-model="MessageMonitoringviewItemCtrl.replyText"></textarea>
-          <button class="btn btn-primary"
-                  data-ng-click="MessageMonitoringviewItemCtrl.replyMessage(message); $event.stopPropagation();">
-              <i class="fa fa-reply-all"></i>
-              Reply
-          </button>
-          <button class="btn btn-default" data-ng-click="replying=false">
-              <i class="fa fa-ban"></i>
-              {{ 'shared_common_cancel' | translate}}
-          </button>
-      </div>
-      <div class="message-reply" data-ng-show="message.updating">
-          <textarea class="form-control" data-ng-model="message.text"></textarea>
-          <button class="btn btn-primary"
-                  data-ng-click="MessageMonitoringviewItemCtrl.updateMessage(message); $event.stopPropagation();">
-              <i class="fa fa-pencil-square-o"></i>
-              Update
-          </button>
-          <button class="btn btn-default" data-ng-click="message.updating=false">
-              <i class="fa fa-ban"></i>
-              {{ 'shared_common_cancel' | translate}}
-          </button>
-      </div>
       <div data-ng-show="message.deleting">
           <button class="btn btn-danger"
-                  data-ng-click="MessageMonitoringviewItemCtrl.deleteMessage(message);">
+                  data-ng-click="ctrl.deleteMessage(message);">
               <i class="fa fa-trash"></i>
               Confirm Delete <span ng-show="message.replies.length">message and replies</span>
           </button>
