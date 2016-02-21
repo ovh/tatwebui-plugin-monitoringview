@@ -8,8 +8,6 @@
   <translation id="message_send">Envoyer</translation>
   <translation id="message_reply">Répondre</translation>
   <translation id="message_read_only">Vous êtes en lecture seule sur ce topic.</translation>
-  <translation id="message_bookmark">Favoris</translation>
-  <translation id="message_delete">Effacer</translation>
   <translation id="message_label_add">Ajouter label</translation>
   <translation id="message_characters_left">Restant</translation>
   <translation id="message_update">Modifier</translation>
