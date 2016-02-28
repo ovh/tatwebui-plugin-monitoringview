@@ -164,6 +164,7 @@ angular.module('TatUi')
             origin.labels = source[i].labels;
             origin.likers = source[i].likers;
             origin.nbLikes = source[i].nbLikes;
+            origin.nbReplies = source[i].nbReplies;
             origin.tags = source[i].tags;
           } else {
             if (!self.data.intervalTimeStamp) {
