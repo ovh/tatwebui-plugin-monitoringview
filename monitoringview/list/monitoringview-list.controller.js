@@ -362,7 +362,6 @@ angular.module('TatUi')
         } else if (self.data.topic.topic.indexOf("/Private/" + Authentication.getIdentity().username) === 0) {
           self.data.isTopicDeletableMsg = true;
         }
-        $rootScope.$broadcast('sidebar-change', {topic:data.topic});
         self.beginTimer(self.data.requestFrequency);
       }, function(err) {
         TatEngine.displayReturn(err);
