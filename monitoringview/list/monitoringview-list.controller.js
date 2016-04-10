@@ -289,7 +289,7 @@ angular.module('TatUi')
      */
     self.digestInformations = function(data) {
       self.data.isTopicRw = data.isTopicRw;
-      if (_.contains(Authentication.getIdentity().favoritesTopics, '/' + self.topic)) {
+      if (_.includes(Authentication.getIdentity().favoritesTopics, '/' + self.topic)) {
         self.data.isFavoriteTopic = true;
       }
       self.data.messages = self.mergeMessages(self.data.messages, data.messages);
