@@ -1,69 +1,75 @@
-<div class="tat-view tat-monitoringview">
+<div class="page-content">
 
-  <div ng-hide="ctrl.data.isTopicRw" class="alert alert-info tat-alert-fixed">
-    <i class="fa fa-info-circle"></i> {{ 'shared_message_read_only' | translate }}
-  </div>
+  <!-- Header Bar -->
+  <header ng-if="ctrl.data.topic" topic="ctrl.data.topic"></header>
 
-  <div class="row">
-      <div class="btn-group">
-        <a class="btn btn-default" ng-disabled="!ctrl.data.displayMore" ng-click="ctrl.loadMore()">
-          <span ng-show="ctrl.data.displayMore"><i class="fa fa-plus-circle"></i></span>
-          {{ 'shared_message_show_more' | translate }}
-        </a>
-        <a class="btn btn-default" ng-click="ctrl.filterDialog.visible=!ctrl.filterDialog.visible" ng-class="{'open': ctrl.filterDialog.visible}">
-          <i class="fa fa-filter"></i>
-        </a>
-        <button class="btn btn-default" data-ng-click="ctrl.filter.andLabel = ''; ctrl.filterSearch()">{{ctrl.data.messages.length}} ALL</button>
-        <button class="btn btn-danger" data-ng-click="ctrl.filter.andLabel = 'AL'; ctrl.filterSearch()">{{ctrl.data.nbAL}} AL</button>
-        <button class="btn btn-success" data-ng-click="ctrl.filter.andLabel = 'UP'; ctrl.filterSearch()">{{ctrl.data.nbUP}} UP</button>
-        <button class="btn btn-warning" data-ng-click="ctrl.filter.andLabel = ''; ctrl.filterSearch()">{{ctrl.data.nbOther}} Other(s)</button>
-        <message-filter-bar></message-filter-bar>
-        <div movable-dialog title="'Filter'" ng-model="ctrl.filterDialog">
-         <message-filter topic="ctrl.data.topic"></message-filter>
-        </div>
-       </div>
-  </div>
+  <div class="tat-view tat-monitoringview">
 
-  <uib-progress><uib-bar ng-repeat="bar in ctrl.data.stacked track by $index" value="bar.value" type="{{bar.type}}"><span>{{bar.value}}%</span></uib-bar></uib-progress>
-
-  <div class="row">
-    <div class="col-md-12">
-      <span>Last 10 update:</span>
-      <span style="color:#ffffff;cursor:pointer"
-        data-ng-click="ctrl.toggleMessage(msg)"
-        ng-repeat="msg in ctrl.data.messages | limitTo:10" class="btn btn-xs {{msg.statusCss}}">
-        {{ctrl.getItem(msg)}}
-      </span>
+    <div ng-hide="ctrl.data.isTopicRw" class="alert alert-info tat-alert-fixed">
+      <i class="fa fa-info-circle"></i> {{ 'shared_message_read_only' | translate }}
     </div>
-  </div>
 
-  <div class="row">
-    <div data-ng-class="message ? 'message-monitoringview-list col-md-7': 'message-monitoringview-list col-md-12'">
-      <div class="hex-row">
-        <div class="hex" uib-popover="{{ctrl.getItem(msg)}}" popover-trigger="mouseenter" popover-placement="bottom"
-          style="color:#ffffff;cursor:pointer"
+    <div class="row">
+        <div class="btn-group">
+          <a class="btn btn-default" ng-disabled="!ctrl.data.displayMore" ng-click="ctrl.loadMore()">
+            <span ng-show="ctrl.data.displayMore"><i class="fa fa-plus-circle"></i></span>
+            {{ 'shared_message_show_more' | translate }}
+          </a>
+          <a class="btn btn-default" ng-click="ctrl.filterDialog.visible=!ctrl.filterDialog.visible" ng-class="{'open': ctrl.filterDialog.visible}">
+            <i class="fa fa-filter"></i>
+          </a>
+          <button class="btn btn-default" data-ng-click="ctrl.filter.andLabel = ''; ctrl.filterSearch()">{{ctrl.data.messages.length}} ALL</button>
+          <button class="btn btn-danger" data-ng-click="ctrl.filter.andLabel = 'AL'; ctrl.filterSearch()">{{ctrl.data.nbAL}} AL</button>
+          <button class="btn btn-success" data-ng-click="ctrl.filter.andLabel = 'UP'; ctrl.filterSearch()">{{ctrl.data.nbUP}} UP</button>
+          <button class="btn btn-warning" data-ng-click="ctrl.filter.andLabel = ''; ctrl.filterSearch()">{{ctrl.data.nbOther}} Other(s)</button>
+          <message-filter-bar></message-filter-bar>
+          <div movable-dialog title="'Filter'" ng-model="ctrl.filterDialog">
+           <message-filter topic="ctrl.data.topic"></message-filter>
+          </div>
+         </div>
+    </div>
+
+    <uib-progress><uib-bar ng-repeat="bar in ctrl.data.stacked track by $index" value="bar.value" type="{{bar.type}}"><span>{{bar.value}}%</span></uib-bar></uib-progress>
+
+    <div class="row">
+      <div class="col-md-12">
+        <span>Last 10 update:</span>
+        <span style="color:#ffffff;cursor:pointer"
           data-ng-click="ctrl.toggleMessage(msg)"
-          ng-repeat="msg in ctrl.data.messages" ng-show="!msg.hide">
-          <div class="top {{msg.statusText}}"></div>
-          <div class="middle {{msg.statusText}}"></div>
-          <div class="bottom {{msg.statusText}}"></div>
+          ng-repeat="msg in ctrl.data.messages | limitTo:10" class="btn btn-xs {{msg.statusCss}}">
+          {{ctrl.getItem(msg)}}
+        </span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div data-ng-class="message ? 'message-monitoringview-list col-md-7': 'message-monitoringview-list col-md-12'">
+        <div class="hex-row">
+          <div class="hex" uib-popover="{{ctrl.getItem(msg)}}" popover-trigger="mouseenter" popover-placement="bottom"
+            style="color:#ffffff;cursor:pointer"
+            data-ng-click="ctrl.toggleMessage(msg)"
+            ng-repeat="msg in ctrl.data.messages" ng-show="!msg.hide">
+            <div class="top {{msg.statusText}}"></div>
+            <div class="middle {{msg.statusText}}"></div>
+            <div class="bottom {{msg.statusText}}"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-5" ng-if="message">
+        <div class="monitoringview-message-right">
+          <button class="btn btn-default btn-xs pull-right" data-ng-click="ctrl.closeMessage()">X</button>
+          <messages-monitoringview-item
+                 data-topic="ctrl.data.topic"
+                 data-message="message"
+                 data-is-topic-deletable-msg="ctrl.data.isTopicDeletableMsg"
+                 data-is-topic-updatable-msg="ctrl.data.isTopicUpdatableMsg"
+                 data-is-topic-deletable-all-msg="ctrl.data.isTopicDeletableAllMsg"
+                 data-is-topic-updatable-all-msg="ctrl.data.isTopicUpdatableAllMsg"
+                 data-is-topic-rw="ctrl.data.isTopicRw"></messages-monitoringview-item>
         </div>
       </div>
     </div>
 
-    <div class="col-md-5" ng-if="message">
-      <div class="monitoringview-message-right">
-        <button class="btn btn-default btn-xs pull-right" data-ng-click="ctrl.closeMessage()">X</button>
-        <messages-monitoringview-item
-               data-topic="ctrl.data.topic"
-               data-message="message"
-               data-is-topic-deletable-msg="ctrl.data.isTopicDeletableMsg"
-               data-is-topic-updatable-msg="ctrl.data.isTopicUpdatableMsg"
-               data-is-topic-deletable-all-msg="ctrl.data.isTopicDeletableAllMsg"
-               data-is-topic-updatable-all-msg="ctrl.data.isTopicUpdatableAllMsg"
-               data-is-topic-rw="ctrl.data.isTopicRw"></messages-monitoringview-item>
-      </div>
-    </div>
   </div>
-
 </div>
