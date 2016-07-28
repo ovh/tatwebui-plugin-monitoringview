@@ -22,10 +22,7 @@
           <button class="btn btn-danger" data-ng-click="ctrl.filter.andLabel = 'AL'; ctrl.filterSearch()">{{ctrl.data.nbAL}} AL</button>
           <button class="btn btn-success" data-ng-click="ctrl.filter.andLabel = 'UP'; ctrl.filterSearch()">{{ctrl.data.nbUP}} UP</button>
           <button class="btn btn-warning" data-ng-click="ctrl.filter.andLabel = ''; ctrl.filterSearch()">{{ctrl.data.nbOther}} Other(s)</button>
-          <message-filter-bar></message-filter-bar>
-          <div movable-dialog title="'Filter'" ng-model="ctrl.filterDialog">
-           <message-filter topic="ctrl.data.topic"></message-filter>
-          </div>
+          <message-filter-bar topic="ctrl.data.topic" searching="ctrl.filterDialog.visible"></message-filter-bar>
          </div>
     </div>
 
