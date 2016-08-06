@@ -46,7 +46,8 @@ angular.module('TatUi')
       stacked: [],
       nbUP: 0,
       nbAL: 0,
-      nbOther: 0
+      nbOther: 0,
+      initialLoading: false
     };
 
     $scope.$on('filter-changed', function(ev, filter){
@@ -294,8 +295,9 @@ angular.module('TatUi')
         self.data.isFavoriteTopic = true;
       }
       self.data.messages = self.mergeMessages(self.data.messages, data.messages);
-      self.loading = false;
       self.computeStack();
+      self.loading = false;
+      self.data.initialLoading = false;
     };
 
 
@@ -344,6 +346,7 @@ angular.module('TatUi')
      * @description Initialize list messages page. Get list of messages from Tat Engine
      */
     self.init = function() {
+      self.data.initialLoading = true;
       TatTopic.computeTopic(self.topic, self.beginTimer);
     };
 
