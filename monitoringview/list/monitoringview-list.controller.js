@@ -14,6 +14,7 @@ angular.module('TatUi')
     $rootScope,
     $stateParams,
     $interval,
+    $cookieStore,
     Authentication,
     TatEngineMessagesRsc,
     TatEngine,
