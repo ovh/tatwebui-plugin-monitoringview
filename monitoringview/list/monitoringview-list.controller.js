@@ -4,7 +4,6 @@
  * @ngdoc controller
  * @name TatUi.controller:MessagesMonitoringViewListCtrl
  * @requires TatUi.TatEngineMessagesRsc Tat Engine Resource Messages
- * @requires TatUi.TatEngineMessageRsc  Tat Engine Resource Message
  * @requires TatUi.TatEngine            Global Tat Engine service
  *
  * @description List Messages controller
@@ -14,16 +13,12 @@ angular.module('TatUi')
     $scope,
     $rootScope,
     $stateParams,
+    $interval,
     Authentication,
     TatEngineMessagesRsc,
-    TatEngineMessageRsc,
-    TatEngineTopicRsc,
     TatEngine,
     TatTopic,
-    TatFilter,
-    Flash,
-    $translate,
-    $interval
+    TatFilter
   ) {
     'use strict';
 
@@ -112,27 +107,6 @@ angular.module('TatUi')
     self.getService = function(message) {
       if (self.isMonitoring(message)) {
         return message.tags[1];
-      }
-    };
-
-    /**
-     * @ngdoc function
-     * @name createMessage
-     * @methodOf TatUi.controller:MessagesMonitoringViewListCtrl
-     * @description Post a new message on the current topic
-     * @param {string} msg Message to post
-     */
-    self.createMessage = function() {
-      if (self.currentMessage.length > 0) {
-        TatEngineMessageRsc.create({
-          text: self.currentMessage,
-          topic: self.topic
-        }).$promise.then(function(data) {
-          self.currentMessage = '';
-          self.data.messages.unshift(data.message);
-        }, function(err) {
-          TatEngine.displayReturn(err);
-        });
       }
     };
 
@@ -347,6 +321,9 @@ angular.module('TatUi')
      */
     self.init = function() {
       self.data.initialLoading = true;
+      if (!angular.isDefined($cookieStore.get("showSidebar")) || $cookieStore.get("showSidebar") == true) {
+        $rootScope.$broadcast("sidebar-toggle");
+      }
       TatTopic.computeTopic(self.topic, self.beginTimer);
     };
 
@@ -389,22 +366,6 @@ angular.module('TatUi')
     self.closeMessage = function(message) {
       $scope.message.displayed = false;
       $scope.message = null;
-    };
-
-    self.containsLabel = function(message, labelText) {
-      if (message.inReplyOfIDRoot) {
-        return false;
-      }
-      var r = false;
-      if (message.labels) {
-        for (var i = 0; i < message.labels.length; i++) {
-          var l = message.labels[i];
-          if (l.text === labelText) {
-            return true;
-          }
-        }
-      }
-      return r;
     };
 
     self.init();
