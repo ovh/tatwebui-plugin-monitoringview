@@ -149,15 +149,6 @@ angular.module('TatUi')
               self.data.intervalTimeStamp = source[i].dateUpdate;
             }
             dest.push(source[i]);
-            dest.sort(function(a, b) {
-              if (a.dateCreation > b.dateCreation) {
-                return -1;
-              }
-              if (a.dateCreation < b.dateCreation) {
-                return 1;
-              }
-              return 0;
-            });
           }
         }
       }
